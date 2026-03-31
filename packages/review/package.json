@@ -1,0 +1,21 @@
+{
+  "name": "@prufs/review",
+  "version": "0.1.0",
+  "description": "Trail review, OPA policy gates, and continuous chain verification for Prufs Phase 2",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/review.test.js",
+    "build:test": "tsc && node --test dist/review.test.js"
+  },
+  "dependencies": {
+    "@open-policy-agent/opa-wasm": "^1.10.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  },
+  "files": ["dist"],
+  "license": "MIT"
+}

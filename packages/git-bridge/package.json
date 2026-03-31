@@ -1,0 +1,23 @@
+{
+  "name": "@prufs/git-bridge",
+  "version": "0.1.0",
+  "description": "One-way lossy export from @prufs/store to a Git remote",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/bridge.test.js",
+    "build:test": "tsc && node --test dist/bridge.test.js"
+  },
+  "dependencies": {
+    "isomorphic-git": "^1.27.0",
+    "node-cron": "^4.2.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
+    "@types/node-cron": "^3.0.0"
+  },
+  "files": ["dist"],
+  "license": "MIT"
+}
