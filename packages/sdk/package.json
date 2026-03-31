@@ -1,0 +1,27 @@
+{
+  "name": "@prufs/sdk",
+  "version": "0.1.1",
+  "description": "Decision trail capture SDK for AI coding agents",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test dist/**/*.test.js"
+  },
+  "dependencies": {
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.15",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.5.0"
+  }
+}

@@ -1,0 +1,118 @@
+/**
+ * @prufs/cloud - Fastify server
+ *
+ * Multi-tenant SaaS backend for Prufs causal commit storage.
+ * Entry point: start with `node dist/server.js`
+ *
+ * Environment variables:
+ *   DATABASE_URL  - Postgres connection string (required)
+ *   PORT          - HTTP port (default 3100)
+ *   HOST          - Bind address (default 0.0.0.0)
+ */
+
+import Fastify from 'fastify';
+import cors from '@fastify/cors';
+import { getPool, closePool } from './db.js';
+import { orgRoutes } from './routes/orgs.js';
+import { keyRoutes } from './routes/keys.js';
+import { commitRoutes } from './routes/commits.js';
+import { AppError } from './types.js';
+
+export async function buildServer() {
+  const app = Fastify({
+    logger: {
+      level: process.env.LOG_LEVEL ?? 'info',
+    },
+  });
+
+  // ─── CORS ──────────────────────────────────────────────────────────
+  await app.register(cors, {
+    origin: true, // Allow all origins for now; lock down for production
+    credentials: true,
+  });
+
+  // ─── Error handler ─────────────────────────────────────────────────
+  app.setErrorHandler((error: Error & { validation?: unknown }, request, reply) => {
+    if (error instanceof AppError) {
+      return reply.code(error.statusCode).send({
+        error: error.code ?? 'ERROR',
+        message: error.message,
+      });
+    }
+
+    // Fastify validation errors
+    if (error.validation) {
+      return reply.code(400).send({
+        error: 'VALIDATION',
+        message: error.message,
+      });
+    }
+
+    request.log.error(error);
+    return reply.code(500).send({
+      error: 'INTERNAL',
+      message: 'Internal server error.',
+    });
+  });
+
+  // ─── Health check ──────────────────────────────────────────────────
+  app.get('/health', async () => {
+    try {
+      const pool = getPool();
+      await pool.query('SELECT 1');
+      return { status: 'ok', service: 'prufs-cloud', db: 'connected' };
+    } catch {
+      return { status: 'degraded', service: 'prufs-cloud', db: 'disconnected' };
+    }
+  });
+
+  // ─── API info ──────────────────────────────────────────────────────
+  app.get('/', async () => ({
+    service: 'prufs-cloud',
+    version: '0.1.0',
+    docs: 'https://docs.prufs.ai',
+    endpoints: {
+      health: 'GET /health',
+      bootstrap: 'POST /v1/orgs',
+      org: 'GET /v1/orgs/:slug',
+      members: 'GET /v1/orgs/:slug/members',
+      signing_keys: 'GET /v1/orgs/:slug/signing-keys',
+      api_keys: 'GET /v1/orgs/:slug/api-keys',
+      usage: 'GET /v1/orgs/:slug/usage',
+      push_commit: 'POST /v1/commits',
+      push_batch: 'POST /v1/commits/batch',
+      get_commit: 'GET /v1/commits/:id',
+      branches: 'GET /v1/branches',
+      log: 'GET /v1/log',
+    },
+  }));
+
+  // ─── Routes ────────────────────────────────────────────────────────
+  await app.register(orgRoutes);
+  await app.register(keyRoutes);
+  await app.register(commitRoutes);
+
+  // ─── Graceful shutdown ─────────────────────────────────────────────
+  const shutdown = async (signal: string) => {
+    app.log.info(`Received ${signal}. Shutting down...`);
+    await app.close();
+    await closePool();
+    process.exit(0);
+  };
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+
+  return app;
+}
+
+// ─── Start if run directly ─────────────────────────────────────────────
+const isMain = process.argv[1]?.endsWith('server.js');
+if (isMain) {
+  const port = parseInt(process.env.PORT ?? '3100', 10);
+  const host = process.env.HOST ?? '0.0.0.0';
+
+  const server = await buildServer();
+  await server.listen({ port, host });
+  server.log.info(`Prufs Cloud listening on ${host}:${port}`);
+}

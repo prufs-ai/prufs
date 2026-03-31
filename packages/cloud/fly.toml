@@ -1,0 +1,39 @@
+# fly.toml app configuration file generated for prufs-cloud on 2026-03-31T14:40:31-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'prufs-cloud'
+primary_region = 'lax'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  HOST = '0.0.0.0'
+  LOG_LEVEL = 'info'
+  NODE_ENV = 'production'
+  PORT = '3100'
+
+[http_service]
+  internal_port = 3100
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[checks]
+  [checks.health]
+    port = 3100
+    type = 'http'
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '10s'
+    path = '/health'
+
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 256

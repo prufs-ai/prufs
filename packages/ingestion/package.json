@@ -1,0 +1,21 @@
+{
+  "name": "@prufs/ingestion",
+  "version": "0.1.0",
+  "description": "Event ingestion service - receives trail events and writes to Neo4j",
+  "type": "module",
+  "main": "./dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc && node dist/server.js",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@prufs/sdk": "file:../sdk",
+    "fastify": "^5.8.4",
+    "neo4j-driver": "^5.28.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}

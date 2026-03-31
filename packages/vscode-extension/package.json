@@ -1,0 +1,70 @@
+{
+  "name": "prufs-vscode",
+  "displayName": "Prufs - Decision Trail",
+  "description": "See why AI-generated code exists. Hover over any line to trace its decision trail.",
+  "version": "0.1.0",
+  "publisher": "cognitionhive",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "workspaceContains:.prufs"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "prufs.traceUp",
+        "title": "Prufs: Trace to Directive"
+      },
+      {
+        "command": "prufs.showTrail",
+        "title": "Prufs: Show Full Trail"
+      },
+      {
+        "command": "prufs.showSession",
+        "title": "Prufs: Show Session Graph"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "prufs.traceUp",
+          "group": "prufs",
+          "when": "prufs.hasTrail"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Prufs",
+      "properties": {
+        "prufs.apiEndpoint": {
+          "type": "string",
+          "default": "http://localhost:3200",
+          "description": "URL of the Prufs Trail API (GraphQL)"
+        },
+        "prufs.showGutterIcons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show trail coverage icons in the gutter"
+        },
+        "prufs.hoverEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show decision trail on hover"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "package": "npx @vscode/vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.90.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@prufs/cloud",
+  "version": "0.1.0",
+  "description": "Prufs Cloud Platform - multi-tenant SaaS backend for causal commit storage and collaboration",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "node --watch dist/server.js",
+    "test": "node --test dist/**/*.test.js",
+    "migrate": "psql $DATABASE_URL -f migrations/001_initial.sql"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.0",
+    "@noble/curves": "^2.0.1",
+    "@noble/hashes": "^1.7.0",
+    "fastify": "^5.2.0",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}
