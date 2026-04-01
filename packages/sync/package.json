@@ -1,0 +1,45 @@
+{
+  "name": "@prufs/sync",
+  "version": "0.1.0",
+  "description": "Bidirectional sync engine for Prufs - synchronizes local @prufs/store with @prufs/cloud",
+  "type": "module",
+  "main": "dist/sync.js",
+  "types": "dist/sync.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/sync.d.ts",
+      "default": "./dist/sync.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/sync.test.js",
+    "test:watch": "node --watch --test dist/sync.test.js",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "prufs",
+    "vcs",
+    "sync",
+    "cloud",
+    "causal-commit",
+    "crdt"
+  ],
+  "author": "B. Wade Lovell <wadelovell@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "@prufs/store": "^0.1.0",
+    "@prufs/commit": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.4.0"
+  }
+}
