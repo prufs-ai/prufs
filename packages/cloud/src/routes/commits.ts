@@ -16,6 +16,7 @@ import * as commitStore from '../models/commits.js';
 import * as meter from '../models/meter.js';
 import { query } from '../db.js';
 import type { CausalCommit } from '../commit-types.js';
+import { isR2Configured, getR2Config, storeCommitJson, storeCommitBlobs, getCommitJson, getBlob } from '../r2.js';
 
 export async function commitRoutes(app: FastifyInstance): Promise<void> {
 
@@ -76,6 +77,17 @@ export async function commitRoutes(app: FastifyInstance): Promise<void> {
 
       // Store the verified commit
       const result = await commitStore.storeCommit(orgId, commit);
+
+      // Store in R2 (non-blocking - log errors but don't fail the request)
+      if (result.stored && isR2Configured()) {
+        try {
+          const r2 = getR2Config();
+          await storeCommitJson(r2, orgId, commit.commit_id, commit as unknown as Record<string, unknown>);
+          await storeCommitBlobs(r2, orgId, commit.changeset);
+        } catch (err) {
+          request.log.error({ err, commit_id: commit.commit_id }, 'R2 storage failed (non-fatal)');
+        }
+      }
 
       // Record billable event (only if newly stored, not idempotent skip)
       if (result.stored) {
@@ -205,12 +217,29 @@ export async function commitRoutes(app: FastifyInstance): Promise<void> {
     { preHandler: [requireAuth] },
     async (request, reply) => {
       const { id } = request.params as { id: string };
-      const commit = await commitStore.getCommit(request.auth.org_id, id);
+      const qs = request.query as { full?: string };
 
+      // If full=true requested, fetch from R2
+      if (qs.full === 'true') {
+        if (!isR2Configured()) {
+          return reply.code(501).send({
+            error: 'R2_NOT_CONFIGURED',
+            message: 'Full commit retrieval requires R2 storage.',
+          });
+        }
+        const r2 = getR2Config();
+        const fullCommit = await getCommitJson(r2, request.auth.org_id, id);
+        if (!fullCommit) {
+          return reply.code(404).send({ error: 'NOT_FOUND', message: 'Commit not found in R2.' });
+        }
+        return fullCommit;
+      }
+
+      // Default: return Postgres metadata
+      const commit = await commitStore.getCommit(request.auth.org_id, id);
       if (!commit) {
         return reply.code(404).send({ error: 'NOT_FOUND', message: 'Commit not found.' });
       }
-
       return commit;
     },
   );
@@ -234,6 +263,30 @@ export async function commitRoutes(app: FastifyInstance): Promise<void> {
       const limit = Math.min(parseInt(qs.limit ?? '50', 10), 200);
 
       return commitStore.getCommitLog(request.auth.org_id, branch, limit);
+    },
+  );
+
+  // ─── Download a blob ──────────────────────────────────────────────
+  app.get(
+    '/v1/blobs/:hash',
+    { preHandler: [requireAuth] },
+    async (request, reply) => {
+      if (!isR2Configured()) {
+        return reply.code(501).send({
+          error: 'R2_NOT_CONFIGURED',
+          message: 'Blob retrieval requires R2 storage.',
+        });
+      }
+      const { hash } = request.params as { hash: string };
+      const r2 = getR2Config();
+      const blob = await getBlob(r2, request.auth.org_id, hash);
+      if (!blob) {
+        return reply.code(404).send({ error: 'NOT_FOUND', message: 'Blob not found.' });
+      }
+      return reply
+        .header('content-type', 'application/octet-stream')
+        .header('content-length', blob.length)
+        .send(blob);
     },
   );
 }

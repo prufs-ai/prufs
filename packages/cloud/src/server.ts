@@ -17,6 +17,7 @@ import { orgRoutes } from './routes/orgs.js';
 import { keyRoutes } from './routes/keys.js';
 import { commitRoutes } from './routes/commits.js';
 import { AppError } from './types.js';
+import { isR2Configured, getR2Config, headObject } from './r2.js';
 
 export async function buildServer() {
   const app = Fastify({
@@ -57,13 +58,32 @@ export async function buildServer() {
 
   // ─── Health check ──────────────────────────────────────────────────
   app.get('/health', async () => {
+    const health: Record<string, string> = { service: 'prufs-cloud' };
+
+    // DB check
     try {
       const pool = getPool();
       await pool.query('SELECT 1');
-      return { status: 'ok', service: 'prufs-cloud', db: 'connected' };
+      health.db = 'connected';
     } catch {
-      return { status: 'degraded', service: 'prufs-cloud', db: 'disconnected' };
+      health.db = 'disconnected';
     }
+
+    // R2 check
+    if (isR2Configured()) {
+      try {
+        const r2 = getR2Config();
+        await headObject(r2, '_health');
+        health.r2 = 'connected';
+      } catch {
+        health.r2 = 'error';
+      }
+    } else {
+      health.r2 = 'not_configured';
+    }
+
+    health.status = health.db === 'connected' ? 'ok' : 'degraded';
+    return health;
   });
 
   // ─── API info ──────────────────────────────────────────────────────
@@ -82,6 +102,8 @@ export async function buildServer() {
       push_commit: 'POST /v1/commits',
       push_batch: 'POST /v1/commits/batch',
       get_commit: 'GET /v1/commits/:id',
+      get_commit_full: 'GET /v1/commits/:id?full=true',
+      get_blob: 'GET /v1/blobs/:hash',
       branches: 'GET /v1/branches',
       log: 'GET /v1/log',
     },
