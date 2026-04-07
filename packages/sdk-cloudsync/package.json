@@ -13,13 +13,13 @@
   },
   "files": [
     "dist",
-    "src",
     "README.md"
   ],
   "scripts": {
     "build": "tsc",
     "test": "tsc && node --test dist/*.test.js",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepack": "rm -f dist/*.test.* dist/*.test.*.map"
   },
   "dependencies": {
     "@prufs/sync": "^0.1.0"
@@ -27,5 +27,8 @@
   "devDependencies": {
     "typescript": "^5.4.0",
     "@types/node": "^20.11.0"
-  }
+  },
+  "bundledDependencies": [
+    "@prufs/sync"
+  ]
 }
