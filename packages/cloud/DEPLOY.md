@@ -25,13 +25,13 @@ fly deploy
 
 ```bash
 # Check health
-curl https://prufs-cloud.fly.dev/health
+curl https://api.prufs.ai/health
 
 # Check API info
-curl https://prufs-cloud.fly.dev/
+curl https://api.prufs.ai/
 
 # Test auth (use your API key)
-curl https://prufs-cloud.fly.dev/v1/orgs/cognitionhive \
+curl https://api.prufs.ai/v1/orgs/cognitionhive \
   -H "Authorization: Bearer prfs_<YOUR_KEY>"
 ```
 
@@ -75,7 +75,7 @@ fly scale show
 fly certs add api.prufs.ai
 
 # Then add a CNAME record in Cloudflare:
-# api.prufs.ai -> prufs-cloud.fly.dev
+# api.prufs.ai -> LIVE (custom domain on Fly.io with Lets Encrypt TLS)
 ```
 
 ## Cost
