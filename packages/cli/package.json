@@ -1,0 +1,25 @@
+{
+  "name": "@prufs/cli",
+  "version": "0.1.0",
+  "description": "Command-line interface for Prufs cloud sync",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "prufs": "dist/bin/prufs.js"
+  },
+  "files": ["dist", "src", "README.md"],
+  "scripts": {
+    "build": "tsc && chmod +x dist/bin/prufs.js",
+    "test": "tsc && node --test dist/*.test.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@prufs/sdk-cloudsync": "^0.2.0",
+    "@prufs/sync": "^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.11.0"
+  }
+}
