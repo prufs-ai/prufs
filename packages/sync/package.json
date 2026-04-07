@@ -1,43 +1,42 @@
 {
   "name": "@prufs/sync",
   "version": "0.1.0",
-  "description": "Bidirectional sync engine for Prufs - synchronizes local @prufs/store with @prufs/cloud",
+  "description": "Bidirectional sync engine between @prufs/store (local SQLite) and @prufs/cloud (api.prufs.ai + R2)",
   "type": "module",
-  "main": "dist/sync.js",
-  "types": "dist/sync.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/sync.d.ts",
-      "default": "./dist/sync.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc",
-    "test": "node --test dist/sync.test.js",
-    "test:watch": "node --watch --test dist/sync.test.js",
-    "lint": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "test": "tsc && node --test dist/*.test.js",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "prufs",
-    "vcs",
     "sync",
-    "cloud",
-    "causal-commit",
-    "crdt"
+    "vcs",
+    "agentic",
+    "decision-trail",
+    "causal-commit"
   ],
-  "author": "B. Wade Lovell <wadelovell@gmail.com>",
+  "author": "Wade Lovell <wade@cognitionhive.com>",
   "license": "MIT",
-  "engines": {
-    "node": ">=22.0.0"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prufs-ai/prufs.git",
+    "directory": "packages/sync"
   },
-  "dependencies": {
-    "@prufs/store": "^0.1.0",
-    "@prufs/commit": "^0.1.0"
-  },
+  "homepage": "https://prufs.ai",
   "devDependencies": {
     "@types/node": "^22.0.0",
     "typescript": "^5.4.0"

@@ -1,6 +1,6 @@
 {
   "name": "@prufs/sdk",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Decision trail capture SDK for AI coding agents",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,6 +17,7 @@
     "test": "node --test dist/**/*.test.js"
   },
   "dependencies": {
+    "@prufs/sdk-cloudsync": "^0.2.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {

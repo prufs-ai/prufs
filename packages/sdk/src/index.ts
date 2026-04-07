@@ -28,6 +28,8 @@
 export { TrailRecorder } from "./recorder.js";
 export { LocalTransport } from "./transport-local.js";
 export { HttpTransport } from "./transport-http.js";
+export { CloudSync } from "@prufs/sdk-cloudsync";
+export type { CloudSyncConfig, SyncSummary, SyncStatus, SyncEventType, SyncEventPayload } from "@prufs/sdk-cloudsync";
 export { SessionObserver, detectDecisions, detectConstraints } from "./hooks/session-observer.js";
 export { ClaudeCodeHook } from "./hooks/claude-code.js";
 export {
