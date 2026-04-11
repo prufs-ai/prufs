@@ -20,6 +20,8 @@ const queryClient = new QueryClient({
 
 function ProtectedRoutes() {
   const apiKey = useAuthStore((s) => s.apiKey)
+  const hasHydrated = useAuthStore((s) => s._hasHydrated)
+  if (!hasHydrated) return null
   if (!apiKey) return <Navigate to="/login" replace />
   return (
     <Layout>

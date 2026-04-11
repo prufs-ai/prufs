@@ -160,7 +160,7 @@ export default function Usage() {
     )
   }
 
-  const chartData = usage.history.map((h) => ({
+  const chartData = (usage.history ?? []).map((h) => ({
     ...h,
     date: fmtDate(h.date),
   }))

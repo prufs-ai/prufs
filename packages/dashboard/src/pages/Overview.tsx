@@ -78,7 +78,7 @@ export default function Overview() {
         <KpiCard
           label="Events consumed"
           value={usageLoading ? '...' : usage?.events_consumed ?? 0}
-          sub={usage ? `of ${usage.events_cap.toLocaleString()} (${usage.tier})` : ''}
+          sub={usage ? `of ${(usage.events_cap ?? 0).toLocaleString()} (${usage.tier})` : ''}
         />
       </div>
 
