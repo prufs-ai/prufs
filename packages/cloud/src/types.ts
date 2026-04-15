@@ -105,12 +105,36 @@ export interface RegisterSigningKeyInput {
 
 // --- Meter ---
 
+export interface UsageHistoryPoint {
+  date: string;   // ISO date string "YYYY-MM-DD"
+  count: number;
+}
+
 export interface UsageSummary {
   org_id: string;
   billing_period: string;
-  event_count: number;
+  events_consumed: number;
+  events_cap: number | null;  // null = unlimited
+  reset_date: string;         // ISO date string, first day of next billing period
   tier: string;
-  limit: number | null;  // null = unlimited
+  history: UsageHistoryPoint[];
+}
+
+// --- Audit ---
+
+export interface AuditEntry {
+  id: string;
+  org_id: string;
+  actor_id: string | null;
+  actor_email: string | null;
+  action: string;
+  category: string;
+  target_type: string | null;
+  target_id: string | null;
+  metadata: Record<string, unknown> | null;
+  ip_address: string | null;
+  result: string;
+  created_at: string;
 }
 
 // --- Errors ---

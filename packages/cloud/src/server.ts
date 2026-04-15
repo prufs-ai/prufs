@@ -16,6 +16,7 @@ import { getPool, closePool } from './db.js';
 import { orgRoutes } from './routes/orgs.js';
 import { keyRoutes } from './routes/keys.js';
 import { commitRoutes } from './routes/commits.js';
+import { auditRoutes } from './routes/audit.js';
 import { AppError } from './types.js';
 import { isR2Configured, getR2Config, headObject } from './r2.js';
 
@@ -106,6 +107,7 @@ export async function buildServer() {
       get_blob: 'GET /v1/blobs/:hash',
       branches: 'GET /v1/branches',
       log: 'GET /v1/log',
+      audit: 'GET /v1/orgs/:slug/audit',
     },
   }));
 
@@ -113,6 +115,7 @@ export async function buildServer() {
   await app.register(orgRoutes);
   await app.register(keyRoutes);
   await app.register(commitRoutes);
+  await app.register(auditRoutes);
 
   // ─── Graceful shutdown ─────────────────────────────────────────────
   const shutdown = async (signal: string) => {
