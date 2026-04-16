@@ -173,3 +173,14 @@ export class RateLimitError extends AppError {
     super(429, `Rate limit exceeded. ${remaining}/${limit} events remaining.`, 'RATE_LIMIT');
   }
 }
+
+
+// --- Invitations (Day 9) ---
+
+export interface Invite {
+  id: string;
+  email: string;
+  role: 'admin' | 'member' | 'viewer';
+  created_at: string;
+  expires_at: string;
+}
