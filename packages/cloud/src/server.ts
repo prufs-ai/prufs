@@ -18,6 +18,7 @@ import { keyRoutes } from './routes/keys.js';
 import { commitRoutes } from './routes/commits.js';
 import { auditRoutes } from './routes/audit.js';
 import { teamRoutes } from './routes/team.js';
+import { trailRoutes } from './routes/trails.js';
 import { AppError } from './types.js';
 import { isR2Configured, getR2Config, headObject } from './r2.js';
 
@@ -118,6 +119,7 @@ export async function buildServer() {
   await app.register(commitRoutes);
   await app.register(auditRoutes);
   await app.register(teamRoutes);
+  await app.register(trailRoutes);
 
   // ─── Graceful shutdown ─────────────────────────────────────────────
   const shutdown = async (signal: string) => {
