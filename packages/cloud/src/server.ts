@@ -19,7 +19,9 @@ import { commitRoutes } from './routes/commits.js';
 import { auditRoutes } from './routes/audit.js';
 import { teamRoutes } from './routes/team.js';
 import { trailRoutes } from './routes/trails.js';
+import { rateLimitPlugin } from './plugins/rate-limit.js';
 import { AppError } from './types.js';
+import { authRoutes } from './routes/auth.js';
 import { isR2Configured, getR2Config, headObject } from './r2.js';
 
 export async function buildServer() {
@@ -34,6 +36,9 @@ export async function buildServer() {
     origin: true, // Allow all origins for now; lock down for production
     credentials: true,
   });
+
+  // ─── Rate limiting ──────────────────────────────────────────────────
+  await app.register(rateLimitPlugin);
 
   // ─── Error handler ─────────────────────────────────────────────────
   app.setErrorHandler((error: Error & { validation?: unknown }, request, reply) => {
@@ -120,6 +125,7 @@ export async function buildServer() {
   await app.register(auditRoutes);
   await app.register(teamRoutes);
   await app.register(trailRoutes);
+  await app.register(authRoutes);
 
   // ─── Graceful shutdown ─────────────────────────────────────────────
   const shutdown = async (signal: string) => {

@@ -1,0 +1,21 @@
+{
+  "name": "prufs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The decision trail for AI-generated code",
+  "author": "B. Wade Lovell <wade@cognitionhive.com>",
+  "license": "UNLICENSED",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:ingestion": "cd packages/ingestion && npm run dev",
+    "dev:api": "cd packages/trail-api && npm run dev",
+    "dev:viz": "cd packages/visualizer && npm run dev",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

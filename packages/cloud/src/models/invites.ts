@@ -41,7 +41,7 @@ export async function createInvite(
        created_at  = now(),
        expires_at  = now() + INTERVAL '7 days',
        accepted_at = NULL
-     RETURNING id, email, role, created_at, expires_at`,
+     RETURNING id, email, role, token, created_at, expires_at`,
     [orgId, email, role],
   );
   return result.rows[0];

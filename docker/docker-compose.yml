@@ -1,0 +1,36 @@
+# Prufs - Full Development Stack
+#
+# Usage:
+#   docker compose up -d               # Start everything
+#   docker compose up -d neo4j         # Start Neo4j only
+#
+# Services:
+#   Neo4j browser:    http://localhost:7474  (neo4j / prufs)
+#   Ingestion API:    http://localhost:3100/api/v1/health
+#   Trail API:        http://localhost:3200  (GraphQL)
+#   Visualizer:       http://localhost:3300
+
+services:
+  neo4j:
+    image: neo4j:5-community
+    container_name: prufs-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/prufs
+      NEO4J_PLUGINS: '[]'
+      NEO4J_server_memory_heap_initial__size: 256m
+      NEO4J_server_memory_heap_max__size: 512m
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    healthcheck:
+      test: ["CMD", "neo4j", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  neo4j-data:
+  neo4j-logs:

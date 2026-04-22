@@ -11,6 +11,7 @@ import type { FastifyInstance } from 'fastify';
 import { requireAuth, requireRole } from '../middleware/auth.js';
 import * as orgModel from '../models/orgs.js';
 import * as inviteModel from '../models/invites.js';
+import { sendInviteEmail } from '../lib/email.js';
 
 const VALID_ROLES = new Set(['admin', 'member', 'viewer']);
 
@@ -53,12 +54,25 @@ export async function teamRoutes(app: FastifyInstance): Promise<void> {
         });
       }
 
+      const email = body.email.toLowerCase().trim();
       const invite = await inviteModel.createInvite(
         org.id,
-        body.email.toLowerCase().trim(),
+        email,
         body.role as 'admin' | 'member' | 'viewer',
       );
+
+      // Fire-and-forget: send invite email
+      sendInviteEmail(email, slug, body.role, invite.token!).catch((err) => {
+        app.log.error({ email, orgSlug: slug, error: String(err) }, 'Invite email send failed');
+      });
+
       return reply.code(201).send(invite);
+
+
+
+
+
+
     },
   );
 

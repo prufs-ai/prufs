@@ -1,6 +1,6 @@
 {
   "name": "@prufs/sdk-cloudsync",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "CloudSync module for @prufs/sdk, a one-import wrapper around @prufs/sync",
   "type": "module",
   "main": "dist/index.js",

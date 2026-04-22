@@ -1,0 +1,121 @@
+# Prufs
+
+**The decision trail for AI-generated code.**
+
+Prufs captures the full chain of reasoning behind every line of AI-generated code - from human directive through agent interpretation, decision alternatives, constraints, and implementation - as a queryable causal graph.
+
+Git tracks *what* changed. Prufs tracks *why*.
+
+## Architecture
+
+```
+SDK (TypeScript)          Captures decision trail events from AI coding agents
+    |
+    v
+Ingestion Service         Receives events via HTTP, writes to graph store
+    |
+    v
+Neo4j Graph Store         Stores the causal decision graph
+    |
+    v
+Trail API (GraphQL)       Unified query layer for trail traversal
+    |
+    +---> VS Code Extension    Hover-to-trail in the editor
+    +---> Trail Visualizer     Interactive web UI for exploring trails
+```
+
+## Quick Start
+
+### 1. Start the graph store
+
+```bash
+cd docker && docker compose up -d neo4j
+```
+
+### 2. Install dependencies and build
+
+```bash
+npm install
+cd packages/sdk && npm run build
+cd ../ingestion && npm run build
+```
+
+### 3. Run the demo
+
+```bash
+npx tsx scripts/demo-trail.ts
+```
+
+### 4. Start the ingestion service (requires Neo4j)
+
+```bash
+cd packages/ingestion && npm run start
+```
+
+## SDK Usage
+
+```typescript
+import { TrailRecorder } from "@prufs/sdk";
+
+const trail = new TrailRecorder({
+  project_id: "my-project",
+  transport: "local", // or "http://localhost:3100"
+  agent_id: "claude-code",
+  model_id: "claude-sonnet-4-20250514",
+});
+
+await trail.startSession();
+
+// Record the human's directive
+const d = await trail.directive("Add user search to admin panel");
+
+// Record the agent's interpretation
+const i = await trail.interpretation(d, "Implement search endpoint...", {
+  confidence: 0.9,
+});
+
+// Record a decision with alternatives
+const dec = await trail.decision(i, {
+  chosen: "Elasticsearch",
+  alternatives: [
+    {
+      description: "PostgreSQL FTS",
+      rejection_reason: "No existing index",
+    },
+  ],
+  rationale: "ES index already exists, supports fuzzy matching",
+  domain_tags: ["search", "database"],
+});
+
+// Record the implementation
+const impl = await trail.implementation([dec], {
+  file_changes: [
+    { path: "src/search.ts", change_type: "added", lines_added: 120, lines_removed: 0 },
+  ],
+  commit_sha: "abc123",
+});
+
+await trail.endSession();
+```
+
+## Project Structure
+
+```
+prufs/
+  packages/
+    sdk/           TypeScript capture SDK (npm package)
+    ingestion/     Event ingestion service (Fastify + Neo4j)
+    trail-api/     GraphQL API (Phase 3)
+    linker/        Code-graph linker (Phase 3, Rust + Tree-sitter)
+    visualizer/    Trail visualizer web UI (Phase 4)
+  docker/          Docker Compose for local development
+  scripts/         Demo and utility scripts
+```
+
+## Status
+
+Phase 1 (Weeks 1 - 3): Graph foundation + SDK skeleton - **In Progress**
+
+---
+
+*Built by B. Wade Lovell / CognitionHive*

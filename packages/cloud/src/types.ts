@@ -181,6 +181,7 @@ export interface Invite {
   id: string;
   email: string;
   role: 'admin' | 'member' | 'viewer';
+  token?: string;
   created_at: string;
   expires_at: string;
 }

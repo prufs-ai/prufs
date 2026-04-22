@@ -1,6 +1,6 @@
 {
   "name": "@prufs/sdk",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Decision trail capture SDK for AI coding agents",
   "type": "module",
   "main": "./dist/index.js",
@@ -24,5 +24,6 @@
     "@types/node": "^22.19.15",
     "@types/uuid": "^10.0.0",
     "typescript": "^5.5.0"
-  }
+  },
+  "files": "[\"dist\", \"src\", \"README.md\"]"
 }
